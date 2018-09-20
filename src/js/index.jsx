@@ -1,6 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+class Button extends React.Component{
+  render(){
+    return (
+      this.props.onClick()
+    );
+  }
+
+}
+
 function Square(props){
   return(
     <button className = "square" onClick = {props.onClick}>
@@ -52,6 +61,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
+      isReverse: true,
     };
   }
 
@@ -59,6 +69,7 @@ class Game extends React.Component {
     const history = this.state.history.slice();
     const current = history[history.length-1];
     const squares = current.squares.slice();
+    
     if(calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -79,13 +90,19 @@ class Game extends React.Component {
       xIsNext: (step %2) === 0,
     })
   }
+
+  reverseButton(){
+    this.setState({
+      isReverse: this.state.isReverse ? false: true
+    })
+  }
   
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     
-    const moves = history.map((step, move) =>{
+    var moves = history.map((step, move) =>{
       const desc = move ?
       'Move #' + move :
       'Game start';
@@ -93,9 +110,13 @@ class Game extends React.Component {
       <li key={move}>
         <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
       </li>
+
     );
     });
+    if(this.state.isReverse == false){
+      moves = moves.reverse();
 
+    }
     let status;
     if(winner) {
       status = 'Winner: ' + winner;
@@ -113,6 +134,11 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div>
+            <button
+              onClick={() => this.reverseButton()}
+              >reverse order</button>
+          </div>
           <ol>{moves}</ol>
         </div>
       </div>
